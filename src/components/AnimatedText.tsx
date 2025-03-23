@@ -16,60 +16,57 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   delay = 0 
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(true); // Always start with true to ensure content is visible by default
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Set hasAnimated to true immediately if once is true
-    // This ensures content is visible even before the intersection happens
-    if (once) {
-      setTimeout(() => {
-        setHasAnimated(true);
-      }, delay);
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-            if (once) {
-              setHasAnimated(true);
-            }
-          }, delay);
-          
-          if (once) {
-            observer.disconnect();
-          }
-        } else if (!once && !hasAnimated) {
-          setIsVisible(false);
-        }
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1,
-      }
-    );
-
-    if (textRef.current) {
-      observer.observe(textRef.current);
-    }
-
-    return () => {
+    // Create a timer to handle delayed animation
+    const timer = setTimeout(() => {
+      // Check if element exists and if it's in viewport
       if (textRef.current) {
-        observer.unobserve(textRef.current);
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting) {
+              setIsVisible(true);
+              setHasAnimated(true);
+              
+              if (once) {
+                observer.disconnect();
+              }
+            } else if (!once) {
+              setIsVisible(false);
+            }
+          },
+          {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1,
+          }
+        );
+        
+        observer.observe(textRef.current);
+        
+        return () => {
+          if (textRef.current) {
+            observer.unobserve(textRef.current);
+          }
+        };
       }
+    }, delay);
+    
+    return () => {
+      clearTimeout(timer);
     };
-  }, [once, delay, hasAnimated]);
+  }, [once, delay]);
 
+  // Always render content, apply animation class only when in viewport
   return (
     <div
       ref={textRef}
       className={cn(
         'transition-opacity duration-700 ease-in-out',
-        (isVisible || hasAnimated) ? 'opacity-100' : 'opacity-0',
+        isVisible ? 'opacity-100' : 'opacity-100', // Always visible regardless of animation state
         className
       )}
     >

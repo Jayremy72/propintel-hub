@@ -16,57 +16,58 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
   animation = 'fade-in-up'
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(true); // Start with true to ensure content is always visible
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // No need for hasAnimated state since we want content to always be visible
+  
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-            setHasAnimated(true);
-          }, delay);
-          observer.disconnect();
-        }
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1,
-      }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => {
+    const timer = setTimeout(() => {
       if (cardRef.current) {
-        observer.unobserve(cardRef.current);
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting) {
+              setIsVisible(true);
+              observer.disconnect(); // Always disconnect once animated
+            }
+          },
+          {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1,
+          }
+        );
+        
+        observer.observe(cardRef.current);
+        
+        return () => {
+          if (cardRef.current) {
+            observer.unobserve(cardRef.current);
+          }
+        };
       }
+    }, delay);
+    
+    return () => {
+      clearTimeout(timer);
     };
   }, [delay]);
 
-  const animationClasses = {
-    'fade-in': 'opacity-0 animate-fade-in',
-    'fade-in-up': 'opacity-0 translate-y-5 animate-fade-in-up',
-    'scale-in': 'opacity-0 scale-95 animate-scale-in',
-    'blur-in': 'opacity-0 blur-sm animate-blur-in'
-  };
+  // Simplified animation classes - only apply when isVisible is true
+  const animationClass = isVisible ? {
+    'fade-in': 'animate-fade-in',
+    'fade-in-up': 'animate-fade-in-up',
+    'scale-in': 'animate-scale-in',
+    'blur-in': 'animate-blur-in'
+  }[animation] : '';
 
-  // Always ensure content remains visible regardless of animation state
   return (
     <div
       ref={cardRef}
       className={cn(
+        'opacity-100', // Always start visible
         'transition-all duration-700 ease-out',
-        isVisible ? animationClasses[animation] : 'opacity-100', // Always show content
-        animation === 'fade-in-up' && isVisible ? 'translate-y-0' : '',
-        animation === 'scale-in' && isVisible ? 'scale-100' : '',
-        animation === 'blur-in' && isVisible ? 'blur-0' : '',
-        hasAnimated && !isVisible ? 'opacity-100 translate-y-0 scale-100 blur-0' : '',
+        isVisible ? animationClass : '',
         className
       )}
     >
