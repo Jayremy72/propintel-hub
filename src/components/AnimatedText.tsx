@@ -20,6 +20,14 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Set hasAnimated to true immediately if once is true
+    // This ensures content is visible even before the intersection happens
+    if (once) {
+      setTimeout(() => {
+        setHasAnimated(true);
+      }, delay);
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;

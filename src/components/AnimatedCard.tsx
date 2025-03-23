@@ -16,7 +16,7 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
   animation = 'fade-in-up'
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(true); // Start with true to ensure content is always visible
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,12 +56,13 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
     'blur-in': 'opacity-0 blur-sm animate-blur-in'
   };
 
+  // Always ensure content remains visible regardless of animation state
   return (
     <div
       ref={cardRef}
       className={cn(
         'transition-all duration-700 ease-out',
-        isVisible ? animationClasses[animation] : (hasAnimated ? 'opacity-100' : 'opacity-0'),
+        isVisible ? animationClasses[animation] : 'opacity-100', // Always show content
         animation === 'fade-in-up' && isVisible ? 'translate-y-0' : '',
         animation === 'scale-in' && isVisible ? 'scale-100' : '',
         animation === 'blur-in' && isVisible ? 'blur-0' : '',
