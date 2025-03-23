@@ -16,6 +16,7 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
   animation = 'fade-in-up'
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
         if (entry.isIntersecting) {
           setTimeout(() => {
             setIsVisible(true);
+            setHasAnimated(true);
           }, delay);
           observer.disconnect();
         }
@@ -59,10 +61,11 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       ref={cardRef}
       className={cn(
         'transition-all duration-700 ease-out',
-        isVisible ? animationClasses[animation] : 'opacity-0',
+        isVisible ? animationClasses[animation] : (hasAnimated ? 'opacity-100' : 'opacity-0'),
         animation === 'fade-in-up' && isVisible ? 'translate-y-0' : '',
         animation === 'scale-in' && isVisible ? 'scale-100' : '',
         animation === 'blur-in' && isVisible ? 'blur-0' : '',
+        hasAnimated && !isVisible ? 'opacity-100 translate-y-0 scale-100 blur-0' : '',
         className
       )}
     >

@@ -16,6 +16,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   delay = 0 
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,12 +26,15 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
         if (entry.isIntersecting) {
           setTimeout(() => {
             setIsVisible(true);
+            if (once) {
+              setHasAnimated(true);
+            }
           }, delay);
           
           if (once) {
             observer.disconnect();
           }
-        } else if (!once) {
+        } else if (!once && !hasAnimated) {
           setIsVisible(false);
         }
       },
@@ -50,14 +54,14 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
         observer.unobserve(textRef.current);
       }
     };
-  }, [once, delay]);
+  }, [once, delay, hasAnimated]);
 
   return (
     <div
       ref={textRef}
       className={cn(
         'transition-opacity duration-700 ease-in-out',
-        isVisible ? 'opacity-100' : 'opacity-0',
+        (isVisible || hasAnimated) ? 'opacity-100' : 'opacity-0',
         className
       )}
     >
