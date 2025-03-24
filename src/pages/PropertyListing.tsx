@@ -192,14 +192,14 @@ const PropertyListing: React.FC = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Property Type</label>
                   <div className="flex flex-wrap gap-2">
-                    {['', 'House', 'Apartment', 'Townhouse', 'Villa', 'Penthouse'].map((type) => (
+                    {['any', 'House', 'Apartment', 'Townhouse', 'Villa', 'Penthouse'].map((type) => (
                       <Button 
                         key={type}
-                        variant={propertyType === type ? 'default' : 'outline'} 
+                        variant={propertyType === (type === 'any' ? '' : type) ? 'default' : 'outline'} 
                         className="px-3"
-                        onClick={() => setPropertyType(type)}
+                        onClick={() => setPropertyType(type === 'any' ? '' : type)}
                       >
-                        {type === '' ? 'Any' : type}
+                        {type === 'any' ? 'Any' : type}
                       </Button>
                     ))}
                   </div>
