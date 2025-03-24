@@ -10,7 +10,19 @@ import PropertyListing from "./pages/PropertyListing";
 import PropertyDetail from "./pages/PropertyDetail";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Create a new QueryClient with error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      // Add proper error handling to prevent undefined values from propagating
+      onError: (err) => {
+        console.error('Query error:', err);
+      }
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

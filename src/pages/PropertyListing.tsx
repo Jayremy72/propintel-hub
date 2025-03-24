@@ -187,6 +187,7 @@ const PropertyListing: React.FC = () => {
   const [bathrooms, setBathrooms] = useState(0);
   const [propertyType, setPropertyType] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('price-asc');
+  const [filteredLocations, setFilteredLocations] = useState<string[]>(locations);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -209,7 +210,18 @@ const PropertyListing: React.FC = () => {
         description: "Showing properties matching your search criteria.",
       });
     }
-  }, [location.search]);
+  }, [location.search, toast]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredLocations(locations);
+    } else {
+      const filtered = locations.filter(location => 
+        location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredLocations(filtered);
+    }
+  }, [searchQuery]);
 
   const sortProperties = (properties: typeof sampleProperties) => {
     switch (sortBy) {
@@ -247,13 +259,6 @@ const PropertyListing: React.FC = () => {
     }).format(price);
   };
 
-  const getFilteredLocations = () => {
-    if (!searchQuery) return locations;
-    return locations.filter(location => 
-      location.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -286,7 +291,7 @@ const PropertyListing: React.FC = () => {
                       />
                       <CommandEmpty>No location found.</CommandEmpty>
                       <CommandGroup>
-                        {getFilteredLocations().map((location) => (
+                        {filteredLocations.map((location) => (
                           <CommandItem
                             key={location}
                             value={location}
