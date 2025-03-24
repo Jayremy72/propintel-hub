@@ -59,13 +59,13 @@ const locations = [
 
 // Define the schema for form validation
 const searchFormSchema = z.object({
-  location: z.string().optional(),
-  propertyType: z.string().optional(),
-  category: z.string().optional(),
+  location: z.string().optional().default(""),
+  propertyType: z.string().optional().default(""),
+  category: z.string().default("Residential"),
   minPrice: z.number().default(0),
   maxPrice: z.number().default(10000000),
-  bedrooms: z.string().optional(),
-  bathrooms: z.string().optional(),
+  bedrooms: z.string().optional().default(""),
+  bathrooms: z.string().optional().default(""),
   features: z.array(z.string()).default([]),
 });
 
@@ -76,7 +76,7 @@ const PropertySearchForm = () => {
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [openLocationCombobox, setOpenLocationCombobox] = useState(false);
 
-  // Initialize form
+  // Initialize form with default values
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
@@ -121,6 +121,15 @@ const PropertySearchForm = () => {
     }).format(price);
   };
 
+  // This function ensures we're only filtering locations when search has input
+  const getFilteredLocations = () => {
+    const searchValue = form.watch('location') || '';
+    if (!searchValue) return locations;
+    return locations.filter(location => 
+      location.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-5">
       <Form {...form}>
@@ -158,24 +167,19 @@ const PropertySearchForm = () => {
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup className="max-h-[200px] overflow-y-auto">
-                            {locations
-                              .filter(location => 
-                                location.toLowerCase().includes((field.value || '').toLowerCase())
-                              )
-                              .map(location => (
-                                <CommandItem
-                                  key={location}
-                                  value={location}
-                                  onSelect={(value) => {
-                                    form.setValue('location', value);
-                                    setOpenLocationCombobox(false);
-                                  }}
-                                >
-                                  <MapPin className="mr-2 h-4 w-4" />
-                                  {location}
-                                </CommandItem>
-                              ))
-                            }
+                            {getFilteredLocations().map((location) => (
+                              <CommandItem
+                                key={location}
+                                value={location}
+                                onSelect={(value) => {
+                                  form.setValue('location', value);
+                                  setOpenLocationCombobox(false);
+                                }}
+                              >
+                                <MapPin className="mr-2 h-4 w-4" />
+                                {location}
+                              </CommandItem>
+                            ))}
                           </CommandGroup>
                         </Command>
                       </PopoverContent>
@@ -343,7 +347,7 @@ const PropertySearchForm = () => {
                       : ''}
                   `}
                   onClick={() => {
-                    const currentFeatures = form.watch('features');
+                    const currentFeatures = form.watch('features') || [];
                     if (currentFeatures.includes(feature)) {
                       form.setValue('features', currentFeatures.filter(f => f !== feature));
                     } else {
