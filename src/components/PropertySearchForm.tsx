@@ -122,6 +122,7 @@ const PropertySearchForm = () => {
   };
 
   // This function ensures we're only filtering locations when search has input
+  // and it always returns a valid array
   const getFilteredLocations = () => {
     const searchValue = form.watch('location') || '';
     if (!searchValue) return locations;
@@ -154,7 +155,8 @@ const PropertySearchForm = () => {
                             <Input
                               placeholder="Search by location, neighborhood or address..."
                               className="pl-10 h-12"
-                              {...field}
+                              value={field.value || ''}
+                              onChange={field.onChange}
                               onClick={() => setOpenLocationCombobox(true)}
                             />
                           </div>
