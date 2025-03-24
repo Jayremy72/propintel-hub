@@ -171,7 +171,7 @@ const PropertySearchForm = () => {
                             }}
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
-                          <CommandGroup className="max-h-[200px] overflow-y-auto">
+                          <CommandGroup>
                             {getFilteredLocations().map((location) => (
                               <CommandItem
                                 key={location}

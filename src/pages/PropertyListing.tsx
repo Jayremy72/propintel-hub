@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -30,7 +29,6 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 
-// Sample locations for autocomplete
 const locations = [
   "Cape Town",
   "Johannesburg",
@@ -52,7 +50,6 @@ const locations = [
   "Midrand",
 ];
 
-// Sample property data
 const sampleProperties = [
   {
     id: 1,
@@ -126,7 +123,6 @@ const sampleProperties = [
     imageUrl: 'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
     coordinates: { lat: -29.108990, lng: 26.175129 }
   },
-  // Add more properties
   {
     id: 7,
     title: 'Luxury Villa with Ocean View',
@@ -192,11 +188,9 @@ const PropertyListing: React.FC = () => {
   const [propertyType, setPropertyType] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('price-asc');
 
-  // Parse URL parameters on load
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     
-    // Set search filters from URL params
     if (params.has('location')) setSearchQuery(params.get('location') || '');
     if (params.has('propertyType')) setPropertyType(params.get('propertyType') || '');
     if (params.has('bedrooms')) setBedrooms(Number(params.get('bedrooms')) || 0);
@@ -208,7 +202,6 @@ const PropertyListing: React.FC = () => {
       ]);
     }
     
-    // If we have search parameters, show the filters by default
     if (location.search) {
       setShowFilters(true);
       toast({
@@ -218,7 +211,6 @@ const PropertyListing: React.FC = () => {
     }
   }, [location.search]);
 
-  // Sort properties based on selected option
   const sortProperties = (properties: typeof sampleProperties) => {
     switch (sortBy) {
       case 'price-asc':
@@ -236,7 +228,6 @@ const PropertyListing: React.FC = () => {
     }
   };
 
-  // Filter properties based on search criteria
   const filteredProperties = sortProperties(sampleProperties.filter(property => {
     const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            property.address.toLowerCase().includes(searchQuery.toLowerCase());
@@ -256,7 +247,6 @@ const PropertyListing: React.FC = () => {
     }).format(price);
   };
 
-  // Helper function to filter locations based on search query
   const getFilteredLocations = () => {
     if (!searchQuery) return locations;
     return locations.filter(location => 
@@ -270,7 +260,6 @@ const PropertyListing: React.FC = () => {
       
       <main className="flex-grow pt-24 pb-16 px-4 md:px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          {/* Search and Filter Bar */}
           <div className="mb-8 bg-white rounded-lg shadow-md p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-grow">
@@ -296,7 +285,7 @@ const PropertyListing: React.FC = () => {
                         onValueChange={setSearchQuery}
                       />
                       <CommandEmpty>No location found.</CommandEmpty>
-                      <CommandGroup className="max-h-[200px] overflow-y-auto">
+                      <CommandGroup>
                         {getFilteredLocations().map((location) => (
                           <CommandItem
                             key={location}
@@ -409,7 +398,6 @@ const PropertyListing: React.FC = () => {
             )}
           </div>
           
-          {/* Results Count and Sorting */}
           <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center">
               <h2 className="text-xl font-semibold">
@@ -448,7 +436,6 @@ const PropertyListing: React.FC = () => {
             </div>
           </div>
           
-          {/* Property Listings or Map */}
           {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProperties.map(property => (
