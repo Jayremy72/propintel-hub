@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 interface NeighborhoodIntelligenceProps {
   className?: string;
   compact?: boolean;
+  neighborhoodName?: string; // Add this prop to fix the type error
 }
 
 const securityData = [
@@ -71,7 +72,8 @@ const COLORS = ['#8b5cf6', '#ec4899', '#f97316', '#10b981', '#0ea5e9'];
 
 const NeighborhoodIntelligence: React.FC<NeighborhoodIntelligenceProps> = ({ 
   className,
-  compact = false 
+  compact = false,
+  neighborhoodName = 'Sandton, Johannesburg' // Default value if not provided
 }) => {
   const renderSecurityScore = (score: number) => {
     let color = 'bg-red-500';
@@ -111,7 +113,7 @@ const NeighborhoodIntelligence: React.FC<NeighborhoodIntelligenceProps> = ({
             <div>
               <CardTitle className="text-lg flex items-center">
                 <MapPin className="h-4 w-4 mr-1 text-propradar-500" />
-                Sandton, Johannesburg
+                {neighborhoodName}
               </CardTitle>
               <CardDescription>Neighborhood Intelligence</CardDescription>
             </div>
@@ -189,7 +191,7 @@ const NeighborhoodIntelligence: React.FC<NeighborhoodIntelligenceProps> = ({
           <div>
             <CardTitle className="text-xl flex items-center">
               <MapPin className="h-5 w-5 mr-2 text-propradar-600" />
-              Sandton, Johannesburg
+              {neighborhoodName}
             </CardTitle>
             <CardDescription>Comprehensive Neighborhood Analysis</CardDescription>
           </div>
