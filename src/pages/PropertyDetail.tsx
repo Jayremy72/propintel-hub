@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,49 +9,89 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bed, Bath, Square, MapPin, Camera, Home, Share2, Printer, Heart, ChevronLeft, Info } from 'lucide-react';
 import PriceInsights from '@/components/PriceInsights';
 import NeighborhoodIntelligence from '@/components/NeighborhoodIntelligence';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock property data (in a real app, this would come from an API)
-const propertyData = {
-  id: 2,
-  title: 'Family Home in Cape Town',
-  description: 'This beautiful family home is located in the heart of Camps Bay, offering stunning ocean views and modern finishes throughout. The property features an open-plan living area, gourmet kitchen, and a spacious outdoor entertainment area with a private pool.',
-  price: 4800000,
-  bedrooms: 4,
-  bathrooms: 3,
-  area: 220,
-  garages: 2,
-  address: '45 Ocean View Drive, Camps Bay, Cape Town',
-  type: 'House',
-  yearBuilt: 2015,
-  features: [
-    'Ocean View', 
-    'Swimming Pool', 
-    'Garden', 
-    'Security System', 
-    'Garage',
-    'Walk-in Closet',
-    'Fireplace',
-    'High Ceilings',
-    'Open Plan Kitchen',
-    'Granite Countertops',
-    'Air Conditioning',
-    'Solar Panels'
-  ],
-  images: [
-    'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-    'https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-    'https://images.unsplash.com/photo-1600566753376-12c8ab8e17a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-    'https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-    'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
-  ],
-  coordinates: { lat: -33.955050, lng: 18.387241 },
-  agent: {
-    name: 'Sarah Johnson',
-    phone: '+27 82 123 4567',
-    email: 'sarah.johnson@propradar.co.za',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+const propertiesData = [
+  {
+    id: 1,
+    title: 'Modern Apartment in Sea Point',
+    description: 'This stylish apartment is located in the vibrant neighborhood of Sea Point, offering beautiful mountain views and sleek modern finishes. Features include an open-plan living space, state-of-the-art kitchen, and a private balcony perfect for enjoying Cape Town\'s sunsets.',
+    price: 3500000,
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 120,
+    garages: 1,
+    address: '15 Main Road, Sea Point, Cape Town',
+    type: 'Apartment',
+    yearBuilt: 2018,
+    features: [
+      'Mountain View', 
+      'Balcony', 
+      'Security System', 
+      'Parking Bay',
+      'Modern Kitchen',
+      'Air Conditioning',
+      'Communal Pool',
+      'Gym Access'
+    ],
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
+    ],
+    coordinates: { lat: -33.9133, lng: 18.3885 },
+    agent: {
+      name: 'Michael Dawson',
+      phone: '+27 83 456 7890',
+      email: 'michael.dawson@propradar.co.za',
+      avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+    }
+  },
+  {
+    id: 2,
+    title: 'Family Home in Cape Town',
+    description: 'This beautiful family home is located in the heart of Camps Bay, offering stunning ocean views and modern finishes throughout. The property features an open-plan living area, gourmet kitchen, and a spacious outdoor entertainment area with a private pool.',
+    price: 4800000,
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 220,
+    garages: 2,
+    address: '45 Ocean View Drive, Camps Bay, Cape Town',
+    type: 'House',
+    yearBuilt: 2015,
+    features: [
+      'Ocean View', 
+      'Swimming Pool', 
+      'Garden', 
+      'Security System', 
+      'Garage',
+      'Walk-in Closet',
+      'Fireplace',
+      'High Ceilings',
+      'Open Plan Kitchen',
+      'Granite Countertops',
+      'Air Conditioning',
+      'Solar Panels'
+    ],
+    images: [
+      'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1600566753376-12c8ab8e17a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
+    ],
+    coordinates: { lat: -33.955050, lng: 18.387241 },
+    agent: {
+      name: 'Sarah Johnson',
+      phone: '+27 82 123 4567',
+      email: 'sarah.johnson@propradar.co.za',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+    }
   }
-};
+];
 
 // Create a fallback property for safety
 const fallbackProperty = {
@@ -79,10 +119,24 @@ const fallbackProperty = {
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
   
   // In a real app, this would fetch the property data based on the ID
-  // For now, we'll simulate by returning our mock data or fallback
-  const property = id === '2' ? propertyData : fallbackProperty;
+  // For now, we'll find the property in our mock data or use the fallback
+  const property = React.useMemo(() => {
+    const foundProperty = propertiesData.find(p => p.id === Number(id));
+    
+    if (!foundProperty && id) {
+      // Show a toast notification when property is not found
+      toast({
+        title: "Property Not Found",
+        description: `We couldn't find property #${id}. Showing fallback information.`,
+        variant: "destructive",
+      });
+    }
+    
+    return foundProperty || fallbackProperty;
+  }, [id, toast]);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-ZA', { 
@@ -95,6 +149,9 @@ const PropertyDetail = () => {
   // Get safe values for any potentially undefined properties
   const safeFeatures = Array.isArray(property.features) ? property.features : [];
   const safeImages = Array.isArray(property.images) ? property.images : [];
+  
+  // Default image to use if no images are available
+  const defaultImage = 'https://via.placeholder.com/800x600?text=No+Image';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -104,10 +161,10 @@ const PropertyDetail = () => {
         {/* Back to results */}
         <div className="container mx-auto px-4 mb-6">
           <Button variant="ghost" className="flex items-center text-gray-600" asChild>
-            <a href="/properties">
+            <Link to="/properties">
               <ChevronLeft className="h-4 w-4 mr-1" />
               Back to search results
-            </a>
+            </Link>
           </Button>
         </div>
         
@@ -116,30 +173,42 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
             <div className="col-span-2 row-span-2 rounded-l-lg overflow-hidden">
               <img 
-                src={safeImages[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
+                src={safeImages[0] || defaultImage} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
               />
             </div>
             <div className="rounded-tr-lg overflow-hidden">
               <img 
-                src={safeImages[1] || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                src={safeImages[1] || defaultImage} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={safeImages[2] || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                src={safeImages[2] || defaultImage} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={safeImages[3] || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                src={safeImages[3] || defaultImage} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
               />
             </div>
             <div className="relative rounded-br-lg overflow-hidden group">
@@ -150,9 +219,12 @@ const PropertyDetail = () => {
                 </Button>
               </div>
               <img 
-                src={safeImages[4] || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                src={safeImages[4] || defaultImage} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
               />
             </div>
           </div>
@@ -251,6 +323,9 @@ const PropertyDetail = () => {
                         <span>{feature}</span>
                       </div>
                     ))}
+                    {safeFeatures.length === 0 && (
+                      <div className="col-span-3 text-gray-500 italic">No features listed for this property</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -268,12 +343,14 @@ const PropertyDetail = () => {
                       propertyPrice={property.price}
                       propertyArea={property.area} 
                       propertyType={property.type}
-                      propertyLocation="Camps Bay, Cape Town"
+                      propertyLocation={property.address?.split(', ').slice(-2).join(', ') || 'Cape Town'}
                     />
                   </TabsContent>
                   
                   <TabsContent value="neighborhood">
-                    <NeighborhoodIntelligence neighborhoodName="Camps Bay, Cape Town" />
+                    <NeighborhoodIntelligence 
+                      neighborhoodName={property.address?.split(', ').slice(-2).join(', ') || 'Cape Town'} 
+                    />
                   </TabsContent>
                 </Tabs>
               </div>
@@ -290,6 +367,9 @@ const PropertyDetail = () => {
                         src={property.agent?.avatar || 'https://via.placeholder.com/80?text=Agent'} 
                         alt={property.agent?.name || 'Agent'} 
                         className="w-16 h-16 rounded-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=Agent';
+                        }}
                       />
                     </div>
                     <div>
@@ -330,6 +410,9 @@ const PropertyDetail = () => {
                       src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates?.lng || 0},${property.coordinates?.lat || 0})/${property.coordinates?.lng || 0},${property.coordinates?.lat || 0},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
                       alt="Map"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x300?text=Map+Not+Available';
+                      }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
                       <Button className="bg-white text-gray-900 hover:bg-gray-100">
