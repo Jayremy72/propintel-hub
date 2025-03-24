@@ -11,7 +11,7 @@ import PriceInsights from '@/components/PriceInsights';
 import NeighborhoodIntelligence from '@/components/NeighborhoodIntelligence';
 
 // Mock property data (in a real app, this would come from an API)
-const property = {
+const propertyData = {
   id: 2,
   title: 'Family Home in Cape Town',
   description: 'This beautiful family home is located in the heart of Camps Bay, offering stunning ocean views and modern finishes throughout. The property features an open-plan living area, gourmet kitchen, and a spacious outdoor entertainment area with a private pool.',
@@ -64,21 +64,21 @@ const PropertyDetail = () => {
     }).format(price);
   };
 
-  // Make sure property is always defined
-  const propertyData = property || {
-    id: 0,
-    title: '',
-    description: '',
-    price: 0,
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 0,
-    address: '',
-    type: '',
-    features: [],
-    images: [],
-    coordinates: { lat: 0, lng: 0 },
-    agent: {
+  // Make sure property is always defined with safe defaults
+  const property = {
+    id: propertyData.id || 0,
+    title: propertyData.title || '',
+    description: propertyData.description || '',
+    price: propertyData.price || 0,
+    bedrooms: propertyData.bedrooms || 0,
+    bathrooms: propertyData.bathrooms || 0,
+    area: propertyData.area || 0,
+    address: propertyData.address || '',
+    type: propertyData.type || '',
+    features: Array.isArray(propertyData.features) ? propertyData.features : [],
+    images: Array.isArray(propertyData.images) ? propertyData.images : [],
+    coordinates: propertyData.coordinates || { lat: 0, lng: 0 },
+    agent: propertyData.agent || {
       name: '',
       phone: '',
       email: '',
@@ -106,29 +106,29 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
             <div className="col-span-2 row-span-2 rounded-l-lg overflow-hidden">
               <img 
-                src={propertyData.images[0] || ''} 
-                alt={propertyData.title} 
+                src={property.images[0] || ''} 
+                alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="rounded-tr-lg overflow-hidden">
               <img 
-                src={propertyData.images[1] || ''} 
-                alt={propertyData.title} 
+                src={property.images[1] || ''} 
+                alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={propertyData.images[2] || ''} 
-                alt={propertyData.title} 
+                src={property.images[2] || ''} 
+                alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={propertyData.images[3] || ''} 
-                alt={propertyData.title} 
+                src={property.images[3] || ''} 
+                alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
@@ -140,8 +140,8 @@ const PropertyDetail = () => {
                 </Button>
               </div>
               <img 
-                src={propertyData.images[4] || ''} 
-                alt={propertyData.title} 
+                src={property.images[4] || ''} 
+                alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
@@ -156,14 +156,14 @@ const PropertyDetail = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-bold mb-2">{propertyData.title}</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold mb-2">{property.title}</h1>
                     <div className="flex items-center text-gray-500">
                       <MapPin size={18} className="mr-1" />
-                      <span>{propertyData.address}</span>
+                      <span>{property.address}</span>
                     </div>
                   </div>
                   <div className="mt-4 md:mt-0">
-                    <p className="text-3xl font-bold text-propradar-600">{formatPrice(propertyData.price)}</p>
+                    <p className="text-3xl font-bold text-propradar-600">{formatPrice(property.price)}</p>
                   </div>
                 </div>
                 
@@ -172,7 +172,7 @@ const PropertyDetail = () => {
                     <Bed size={20} className="mr-2 text-gray-500" />
                     <div>
                       <p className="text-sm text-gray-500">Bedrooms</p>
-                      <p className="font-semibold">{propertyData.bedrooms}</p>
+                      <p className="font-semibold">{property.bedrooms}</p>
                     </div>
                   </div>
                   
@@ -180,7 +180,7 @@ const PropertyDetail = () => {
                     <Bath size={20} className="mr-2 text-gray-500" />
                     <div>
                       <p className="text-sm text-gray-500">Bathrooms</p>
-                      <p className="font-semibold">{propertyData.bathrooms}</p>
+                      <p className="font-semibold">{property.bathrooms}</p>
                     </div>
                   </div>
                   
@@ -188,7 +188,7 @@ const PropertyDetail = () => {
                     <Square size={20} className="mr-2 text-gray-500" />
                     <div>
                       <p className="text-sm text-gray-500">Area</p>
-                      <p className="font-semibold">{propertyData.area} m²</p>
+                      <p className="font-semibold">{property.area} m²</p>
                     </div>
                   </div>
                   
@@ -196,7 +196,7 @@ const PropertyDetail = () => {
                     <Home size={20} className="mr-2 text-gray-500" />
                     <div>
                       <p className="text-sm text-gray-500">Property Type</p>
-                      <p className="font-semibold">{propertyData.type}</p>
+                      <p className="font-semibold">{property.type}</p>
                     </div>
                   </div>
                 </div>
@@ -228,14 +228,14 @@ const PropertyDetail = () => {
                 <div className="mb-6">
                   <h2 className="text-xl font-semibold mb-3">Description</h2>
                   <p className="text-gray-600 leading-relaxed">
-                    {propertyData.description}
+                    {property.description}
                   </p>
                 </div>
                 
                 <div>
                   <h2 className="text-xl font-semibold mb-3">Features & Amenities</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2">
-                    {propertyData.features.map((feature, index) => (
+                    {property.features.map((feature, index) => (
                       <div key={index} className="flex items-center">
                         <div className="w-2 h-2 bg-propradar-600 rounded-full mr-2"></div>
                         <span>{feature}</span>
@@ -255,9 +255,9 @@ const PropertyDetail = () => {
                   
                   <TabsContent value="price">
                     <PriceInsights 
-                      propertyPrice={propertyData.price}
-                      propertyArea={propertyData.area} 
-                      propertyType={propertyData.type}
+                      propertyPrice={property.price}
+                      propertyArea={property.area} 
+                      propertyType={property.type}
                       propertyLocation="Camps Bay, Cape Town"
                     />
                   </TabsContent>
@@ -277,13 +277,13 @@ const PropertyDetail = () => {
                   <div className="flex items-center mb-6">
                     <div className="mr-4">
                       <img 
-                        src={propertyData.agent.avatar} 
-                        alt={propertyData.agent.name} 
+                        src={property.agent.avatar} 
+                        alt={property.agent.name} 
                         className="w-16 h-16 rounded-full object-cover"
                       />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">{propertyData.agent.name}</h3>
+                      <h3 className="font-semibold text-lg">{property.agent.name}</h3>
                       <p className="text-sm text-gray-500">Property Agent</p>
                     </div>
                   </div>
@@ -291,14 +291,14 @@ const PropertyDetail = () => {
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Phone:</div>
-                      <a href={`tel:${propertyData.agent.phone}`} className="text-propradar-600 hover:underline">
-                        {propertyData.agent.phone}
+                      <a href={`tel:${property.agent.phone}`} className="text-propradar-600 hover:underline">
+                        {property.agent.phone}
                       </a>
                     </div>
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Email:</div>
-                      <a href={`mailto:${propertyData.agent.email}`} className="text-propradar-600 hover:underline">
-                        {propertyData.agent.email}
+                      <a href={`mailto:${property.agent.email}`} className="text-propradar-600 hover:underline">
+                        {property.agent.email}
                       </a>
                     </div>
                   </div>
@@ -317,7 +317,7 @@ const PropertyDetail = () => {
                 <CardContent className="p-0">
                   <div className="aspect-video relative overflow-hidden rounded-t-lg">
                     <img 
-                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${propertyData.coordinates.lng},${propertyData.coordinates.lat})/${propertyData.coordinates.lng},${propertyData.coordinates.lat},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
+                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates.lng},${property.coordinates.lat})/${property.coordinates.lng},${property.coordinates.lat},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
                       alt="Map"
                       className="w-full h-full object-cover"
                     />
@@ -329,7 +329,7 @@ const PropertyDetail = () => {
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold mb-1">Location</h3>
-                    <p className="text-sm text-gray-600 mb-2">{propertyData.address}</p>
+                    <p className="text-sm text-gray-600 mb-2">{property.address}</p>
                     <div className="text-sm space-y-1">
                       <div className="flex justify-between">
                         <span className="text-gray-500">Schools</span>
