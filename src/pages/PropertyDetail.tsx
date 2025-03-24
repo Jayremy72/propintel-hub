@@ -53,8 +53,36 @@ const propertyData = {
   }
 };
 
+// Create a fallback property for safety
+const fallbackProperty = {
+  id: 0,
+  title: 'Property Not Found',
+  description: 'Property details not available',
+  price: 0,
+  bedrooms: 0,
+  bathrooms: 0,
+  area: 0,
+  garages: 0,
+  address: 'Address not available',
+  type: 'Unknown',
+  yearBuilt: 0,
+  features: [],
+  images: [],
+  coordinates: { lat: -33.918861, lng: 18.423300 }, // Default to Cape Town
+  agent: {
+    name: 'Agent not available',
+    phone: '',
+    email: '',
+    avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'
+  }
+};
+
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  
+  // In a real app, this would fetch the property data based on the ID
+  // For now, we'll simulate by returning our mock data or fallback
+  const property = id === '2' ? propertyData : fallbackProperty;
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-ZA', { 
@@ -64,27 +92,9 @@ const PropertyDetail = () => {
     }).format(price);
   };
 
-  // Make sure property is always defined with safe defaults
-  const property = {
-    id: propertyData.id || 0,
-    title: propertyData.title || '',
-    description: propertyData.description || '',
-    price: propertyData.price || 0,
-    bedrooms: propertyData.bedrooms || 0,
-    bathrooms: propertyData.bathrooms || 0,
-    area: propertyData.area || 0,
-    address: propertyData.address || '',
-    type: propertyData.type || '',
-    features: Array.isArray(propertyData.features) ? propertyData.features : [],
-    images: Array.isArray(propertyData.images) ? propertyData.images : [],
-    coordinates: propertyData.coordinates || { lat: 0, lng: 0 },
-    agent: propertyData.agent || {
-      name: '',
-      phone: '',
-      email: '',
-      avatar: ''
-    }
-  };
+  // Get safe values for any potentially undefined properties
+  const safeFeatures = Array.isArray(property.features) ? property.features : [];
+  const safeImages = Array.isArray(property.images) ? property.images : [];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -106,28 +116,28 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
             <div className="col-span-2 row-span-2 rounded-l-lg overflow-hidden">
               <img 
-                src={property.images[0] || ''} 
+                src={safeImages[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="rounded-tr-lg overflow-hidden">
               <img 
-                src={property.images[1] || ''} 
+                src={safeImages[1] || 'https://via.placeholder.com/400x300?text=No+Image'} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={property.images[2] || ''} 
+                src={safeImages[2] || 'https://via.placeholder.com/400x300?text=No+Image'} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={property.images[3] || ''} 
+                src={safeImages[3] || 'https://via.placeholder.com/400x300?text=No+Image'} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
               />
@@ -140,7 +150,7 @@ const PropertyDetail = () => {
                 </Button>
               </div>
               <img 
-                src={property.images[4] || ''} 
+                src={safeImages[4] || 'https://via.placeholder.com/400x300?text=No+Image'} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
               />
@@ -235,7 +245,7 @@ const PropertyDetail = () => {
                 <div>
                   <h2 className="text-xl font-semibold mb-3">Features & Amenities</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2">
-                    {property.features.map((feature, index) => (
+                    {safeFeatures.map((feature, index) => (
                       <div key={index} className="flex items-center">
                         <div className="w-2 h-2 bg-propradar-600 rounded-full mr-2"></div>
                         <span>{feature}</span>
@@ -277,13 +287,13 @@ const PropertyDetail = () => {
                   <div className="flex items-center mb-6">
                     <div className="mr-4">
                       <img 
-                        src={property.agent.avatar} 
-                        alt={property.agent.name} 
+                        src={property.agent?.avatar || 'https://via.placeholder.com/80?text=Agent'} 
+                        alt={property.agent?.name || 'Agent'} 
                         className="w-16 h-16 rounded-full object-cover"
                       />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">{property.agent.name}</h3>
+                      <h3 className="font-semibold text-lg">{property.agent?.name || 'Agent'}</h3>
                       <p className="text-sm text-gray-500">Property Agent</p>
                     </div>
                   </div>
@@ -291,14 +301,14 @@ const PropertyDetail = () => {
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Phone:</div>
-                      <a href={`tel:${property.agent.phone}`} className="text-propradar-600 hover:underline">
-                        {property.agent.phone}
+                      <a href={`tel:${property.agent?.phone || ''}`} className="text-propradar-600 hover:underline">
+                        {property.agent?.phone || 'N/A'}
                       </a>
                     </div>
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Email:</div>
-                      <a href={`mailto:${property.agent.email}`} className="text-propradar-600 hover:underline">
-                        {property.agent.email}
+                      <a href={`mailto:${property.agent?.email || ''}`} className="text-propradar-600 hover:underline">
+                        {property.agent?.email || 'N/A'}
                       </a>
                     </div>
                   </div>
@@ -317,7 +327,7 @@ const PropertyDetail = () => {
                 <CardContent className="p-0">
                   <div className="aspect-video relative overflow-hidden rounded-t-lg">
                     <img 
-                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates.lng},${property.coordinates.lat})/${property.coordinates.lng},${property.coordinates.lat},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
+                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates?.lng || 0},${property.coordinates?.lat || 0})/${property.coordinates?.lng || 0},${property.coordinates?.lat || 0},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
                       alt="Map"
                       className="w-full h-full object-cover"
                     />
@@ -360,6 +370,9 @@ const PropertyDetail = () => {
                             src={`https://images.unsplash.com/photo-159921520${item}-abcd${item}?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=240&q=80`}
                             alt="Similar property" 
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/240?text=Property';
+                            }}
                           />
                         </div>
                         <div className="flex-grow">
