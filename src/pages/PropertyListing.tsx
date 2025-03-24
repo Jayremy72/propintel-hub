@@ -256,6 +256,14 @@ const PropertyListing: React.FC = () => {
     }).format(price);
   };
 
+  // Helper function to filter locations based on search query
+  const getFilteredLocations = () => {
+    if (!searchQuery) return locations;
+    return locations.filter(location => 
+      location.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -289,24 +297,19 @@ const PropertyListing: React.FC = () => {
                       />
                       <CommandEmpty>No location found.</CommandEmpty>
                       <CommandGroup className="max-h-[200px] overflow-y-auto">
-                        {locations
-                          .filter(location => 
-                            location.toLowerCase().includes((searchQuery || '').toLowerCase())
-                          )
-                          .map(location => (
-                            <CommandItem
-                              key={location}
-                              value={location}
-                              onSelect={(value) => {
-                                setSearchQuery(value);
-                                setOpenLocationCombobox(false);
-                              }}
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              {location}
-                            </CommandItem>
-                          ))
-                        }
+                        {getFilteredLocations().map((location) => (
+                          <CommandItem
+                            key={location}
+                            value={location}
+                            onSelect={(value) => {
+                              setSearchQuery(value);
+                              setOpenLocationCombobox(false);
+                            }}
+                          >
+                            <MapPin className="mr-2 h-4 w-4" />
+                            {location}
+                          </CommandItem>
+                        ))}
                       </CommandGroup>
                     </Command>
                   </PopoverContent>

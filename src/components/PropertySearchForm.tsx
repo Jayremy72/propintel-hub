@@ -143,7 +143,10 @@ const PropertySearchForm = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <Popover open={openLocationCombobox} onOpenChange={setOpenLocationCombobox}>
+                    <Popover 
+                      open={openLocationCombobox} 
+                      onOpenChange={setOpenLocationCombobox}
+                    >
                       <PopoverTrigger asChild>
                         <FormControl>
                           <div className="relative">
@@ -162,8 +165,10 @@ const PropertySearchForm = () => {
                           <CommandInput 
                             placeholder="Search location..." 
                             className="h-9"
-                            value={field.value}
-                            onValueChange={field.onChange}
+                            value={field.value || ''}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                            }}
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup className="max-h-[200px] overflow-y-auto">
@@ -197,7 +202,8 @@ const PropertySearchForm = () => {
                 <FormItem className="md:w-1/4">
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || undefined}
+                    value={field.value || undefined}
                   >
                     <FormControl>
                       <SelectTrigger className="h-12">
@@ -239,6 +245,7 @@ const PropertySearchForm = () => {
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -263,7 +270,8 @@ const PropertySearchForm = () => {
                   <FormLabel>Bedrooms</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || undefined}
+                    value={field.value || undefined}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -292,7 +300,8 @@ const PropertySearchForm = () => {
                   <FormLabel>Bathrooms</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value}
+                    defaultValue={field.value || undefined}
+                    value={field.value || undefined}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -342,7 +351,7 @@ const PropertySearchForm = () => {
                   variant="outline"
                   className={`
                     text-sm justify-start h-auto py-2
-                    ${form.watch('features').includes(feature) 
+                    ${(form.watch('features') || []).includes(feature) 
                       ? 'bg-propradar-100 border-propradar-300 text-propradar-800' 
                       : ''}
                   `}
