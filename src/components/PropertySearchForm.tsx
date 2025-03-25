@@ -117,12 +117,27 @@ const PropertySearchForm = () => {
 
   const getFilteredLocations = () => {
     const searchValue = form.watch('location') || '';
-    // Ensure we always return an array, even if no locations match
-    if (!searchValue) return locations || [];
-    const filtered = locations.filter(location => 
-      location.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    return filtered || [];
+    // Ensure we always return a valid array
+    if (!searchValue || typeof searchValue !== 'string') {
+      return locations || [];
+    }
+    
+    try {
+      // Safely filter the locations and handle any potential errors
+      const filtered = locations.filter(location => 
+        location.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      return filtered || [];
+    } catch (error) {
+      console.error('Error filtering locations:', error);
+      return [];
+    }
+  };
+
+  // Safely get features array with fallback
+  const getFeatures = () => {
+    const features = form.watch('features');
+    return Array.isArray(features) ? features : [];
   };
 
   return (
@@ -337,12 +352,12 @@ const PropertySearchForm = () => {
                   variant="outline"
                   className={`
                     text-sm justify-start h-auto py-2
-                    ${(form.watch('features') || []).includes(feature) 
+                    ${getFeatures().includes(feature) 
                       ? 'bg-propradar-100 border-propradar-300 text-propradar-800' 
                       : ''}
                   `}
                   onClick={() => {
-                    const currentFeatures = form.watch('features') || [];
+                    const currentFeatures = getFeatures();
                     if (currentFeatures.includes(feature)) {
                       form.setValue('features', currentFeatures.filter(f => f !== feature));
                     } else {

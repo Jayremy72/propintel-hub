@@ -213,15 +213,24 @@ const PropertyListing: React.FC = () => {
   }, [location.search, toast]);
 
   useEffect(() => {
-    if (!searchQuery) {
-      setFilteredLocations(locations);
-    } else {
-      const filtered = locations.filter(location => 
-        location.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredLocations(filtered || []);
+    try {
+      if (!searchQuery) {
+        setFilteredLocations(locations);
+      } else {
+        const filtered = locations.filter(location => 
+          location.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredLocations(filtered || []);
+      }
+    } catch (error) {
+      console.error('Error filtering locations:', error);
+      setFilteredLocations([]);
     }
   }, [searchQuery]);
+
+  const getFilteredLocationsArray = () => {
+    return Array.isArray(filteredLocations) ? filteredLocations : [];
+  };
 
   const sortProperties = (properties: typeof sampleProperties) => {
     switch (sortBy) {
@@ -291,7 +300,7 @@ const PropertyListing: React.FC = () => {
                       />
                       <CommandEmpty>No location found.</CommandEmpty>
                       <CommandGroup>
-                        {(filteredLocations || []).map((location) => (
+                        {getFilteredLocationsArray().map((location) => (
                           <CommandItem
                             key={location}
                             value={location}
@@ -467,3 +476,4 @@ const PropertyListing: React.FC = () => {
 };
 
 export default PropertyListing;
+
