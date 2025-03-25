@@ -109,6 +109,9 @@ const PropertySearchForm = () => {
                       <Input 
                         placeholder="Search by location, neighborhood or address..." 
                         className="pl-10 h-12"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck="false"
                         {...field}
                       />
                     </FormControl>
@@ -133,7 +136,7 @@ const PropertySearchForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">Any Type</SelectItem>
+                      <SelectItem value="Any Type">Any Type</SelectItem>
                       <SelectItem value="House">House</SelectItem>
                       <SelectItem value="Apartment">Apartment</SelectItem>
                       <SelectItem value="Townhouse">Townhouse</SelectItem>
@@ -216,7 +219,7 @@ const PropertySearchForm = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Any</SelectItem>
+                          <SelectItem value="Any">Any</SelectItem>
                           <SelectItem value="1">1+</SelectItem>
                           <SelectItem value="2">2+</SelectItem>
                           <SelectItem value="3">3+</SelectItem>
@@ -245,7 +248,7 @@ const PropertySearchForm = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Any</SelectItem>
+                          <SelectItem value="Any">Any</SelectItem>
                           <SelectItem value="1">1+</SelectItem>
                           <SelectItem value="2">2+</SelectItem>
                           <SelectItem value="3">3+</SelectItem>

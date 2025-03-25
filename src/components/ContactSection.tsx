@@ -45,6 +45,9 @@ const ContactSection: React.FC = () => {
                     id="name"
                     placeholder="John Doe"
                     className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck="false"
                   />
                 </div>
                 <div className="space-y-2">
@@ -56,6 +59,9 @@ const ContactSection: React.FC = () => {
                     type="email"
                     placeholder="john@example.com"
                     className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck="false"
                   />
                 </div>
               </div>
@@ -68,6 +74,9 @@ const ContactSection: React.FC = () => {
                   id="subject"
                   placeholder="How can we help you?"
                   className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
                 />
               </div>
               
@@ -79,6 +88,9 @@ const ContactSection: React.FC = () => {
                   id="message"
                   placeholder="Your message here..."
                   className="min-h-[150px] border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
                 />
               </div>
               
