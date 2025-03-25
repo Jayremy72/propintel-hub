@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin } from 'lucide-react';
+import { Search, MapPin, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -10,6 +11,11 @@ import {
   SelectTrigger,
   SelectValue 
 } from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Form,
   FormControl,
@@ -21,48 +27,16 @@ import { Slider } from '@/components/ui/slider';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
-const locations = [
-  "Cape Town",
-  "Johannesburg",
-  "Durban",
-  "Pretoria",
-  "Port Elizabeth",
-  "Bloemfontein",
-  "East London",
-  "Kimberley",
-  "Nelspruit",
-  "Polokwane",
-  "Stellenbosch",
-  "Sandton",
-  "Camps Bay",
-  "Ballito",
-  "Umhlanga",
-  "Centurion",
-  "Somerset West",
-  "Midrand",
-];
-
+// Define the schema for form validation
 const searchFormSchema = z.object({
-  location: z.string().optional().default(""),
-  propertyType: z.string().optional().default(""),
-  category: z.string().default("Residential"),
+  location: z.string().optional(),
+  propertyType: z.string().optional(),
+  category: z.string().optional(),
   minPrice: z.number().default(0),
   maxPrice: z.number().default(10000000),
-  bedrooms: z.string().optional().default(""),
-  bathrooms: z.string().optional().default(""),
+  bedrooms: z.string().optional(),
+  bathrooms: z.string().optional(),
   features: z.array(z.string()).default([]),
 });
 
@@ -70,9 +44,10 @@ type SearchFormValues = z.infer<typeof searchFormSchema>;
 
 const PropertySearchForm = () => {
   const navigate = useNavigate();
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 10000000]);
-  const [openLocationCombobox, setOpenLocationCombobox] = useState(false);
 
+  // Initialize form
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
@@ -88,9 +63,11 @@ const PropertySearchForm = () => {
   });
 
   const onSubmit = (data: SearchFormValues) => {
+    // Update with price range values
     data.minPrice = priceRange[0];
     data.maxPrice = priceRange[1];
     
+    // Convert form data to query parameters
     const params = new URLSearchParams();
     
     Object.entries(data).forEach(([key, value]) => {
@@ -103,6 +80,7 @@ const PropertySearchForm = () => {
       }
     });
     
+    // Navigate to properties page with search filters
     navigate(`/properties?${params.toString()}`);
   };
 
@@ -114,94 +92,32 @@ const PropertySearchForm = () => {
     }).format(price);
   };
 
-  const getFilteredLocations = () => {
-    const searchValue = form.watch('location') || '';
-    // Ensure we always return a valid array
-    if (!searchValue || typeof searchValue !== 'string') {
-      return locations || [];
-    }
-    
-    try {
-      // Safely filter the locations and handle any potential errors
-      const filtered = locations.filter(location => 
-        location.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      return filtered || [];
-    } catch (error) {
-      console.error('Error filtering locations:', error);
-      return [];
-    }
-  };
-
-  // Safely get features array with fallback
-  const getFeatures = () => {
-    const features = form.watch('features');
-    return Array.isArray(features) ? features : [];
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-5">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
+            {/* Location Search */}
             <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <Popover 
-                      open={openLocationCombobox} 
-                      onOpenChange={setOpenLocationCombobox}
-                    >
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                            <Input
-                              placeholder="Search by location, neighborhood or address..."
-                              className="pl-10 h-12"
-                              value={field.value || ''}
-                              onChange={field.onChange}
-                              onClick={() => setOpenLocationCombobox(true)}
-                            />
-                          </div>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0 w-full min-w-[300px]" align="start">
-                        <Command>
-                          <CommandInput 
-                            placeholder="Search location..." 
-                            className="h-9"
-                            value={field.value || ''}
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                            }}
-                          />
-                          <CommandEmpty>No location found.</CommandEmpty>
-                          <CommandGroup>
-                            {getFilteredLocations().map((location) => (
-                              <CommandItem
-                                key={location}
-                                value={location}
-                                onSelect={(value) => {
-                                  form.setValue('location', value);
-                                  setOpenLocationCombobox(false);
-                                }}
-                              >
-                                <MapPin className="mr-2 h-4 w-4" />
-                                {location}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input 
+                        placeholder="Search by location, neighborhood or address..." 
+                        className="pl-10 h-12"
+                        {...field}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />
             </div>
 
+            {/* Property Type */}
             <FormField
               control={form.control}
               name="propertyType"
@@ -209,8 +125,7 @@ const PropertySearchForm = () => {
                 <FormItem className="md:w-1/4">
                   <Select 
                     onValueChange={field.onChange} 
-                    defaultValue={field.value || undefined}
-                    value={field.value || undefined}
+                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="h-12">
@@ -218,7 +133,7 @@ const PropertySearchForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="any">Any Type</SelectItem>
+                      <SelectItem value="">Any Type</SelectItem>
                       <SelectItem value="House">House</SelectItem>
                       <SelectItem value="Apartment">Apartment</SelectItem>
                       <SelectItem value="Townhouse">Townhouse</SelectItem>
@@ -231,6 +146,7 @@ const PropertySearchForm = () => {
               )}
             />
 
+            {/* Search Button */}
             <Button 
               type="submit" 
               className="bg-propradar-600 hover:bg-propradar-700 h-12 md:px-8"
@@ -239,135 +155,176 @@ const PropertySearchForm = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Residential">Residential</SelectItem>
-                      <SelectItem value="Commercial">Commercial</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="bedrooms"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bedrooms</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || undefined}
-                    value={field.value || undefined}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Any" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="any">Any</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
-                      <SelectItem value="4">4+</SelectItem>
-                      <SelectItem value="5">5+</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="bathrooms"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bathrooms</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || undefined}
-                    value={field.value || undefined}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Any" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="any">Any</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
-                      <SelectItem value="4">4+</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormItem>
-              <FormLabel>Price Range</FormLabel>
-              <div className="pt-2 px-2">
-                <Slider
-                  value={priceRange}
-                  min={0}
-                  max={10000000}
-                  step={100000}
-                  onValueChange={setPriceRange}
-                  className="mb-2"
+          {/* Advanced Search Collapsible */}
+          <Collapsible
+            open={isAdvancedOpen}
+            onOpenChange={setIsAdvancedOpen}
+            className="mt-2"
+          >
+            <CollapsibleTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="flex items-center justify-center w-full text-propradar-600 p-1"
+              >
+                <span>Advanced Search</span>
+                <ChevronDown 
+                  className={`ml-2 h-4 w-4 transition-transform ${isAdvancedOpen ? 'rotate-180' : ''}`} 
                 />
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span>{formatPrice(priceRange[0])}</span>
-                  <span>{formatPrice(priceRange[1])}</span>
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Property Category - Residential/Commercial */}
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Residential">Residential</SelectItem>
+                          <SelectItem value="Commercial">Commercial</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Bedrooms */}
+                <FormField
+                  control={form.control}
+                  name="bedrooms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bedrooms</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="">Any</SelectItem>
+                          <SelectItem value="1">1+</SelectItem>
+                          <SelectItem value="2">2+</SelectItem>
+                          <SelectItem value="3">3+</SelectItem>
+                          <SelectItem value="4">4+</SelectItem>
+                          <SelectItem value="5">5+</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Bathrooms */}
+                <FormField
+                  control={form.control}
+                  name="bathrooms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bathrooms</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="">Any</SelectItem>
+                          <SelectItem value="1">1+</SelectItem>
+                          <SelectItem value="2">2+</SelectItem>
+                          <SelectItem value="3">3+</SelectItem>
+                          <SelectItem value="4">4+</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Price Range */}
+                <FormItem>
+                  <FormLabel>Price Range</FormLabel>
+                  <div className="pt-4 px-2">
+                    <Slider
+                      value={priceRange}
+                      min={0}
+                      max={10000000}
+                      step={100000}
+                      onValueChange={setPriceRange}
+                      className="mb-2"
+                    />
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>{formatPrice(priceRange[0])}</span>
+                      <span>{formatPrice(priceRange[1])}</span>
+                    </div>
+                  </div>
+                </FormItem>
+              </div>
+              
+              {/* Property Features */}
+              <div>
+                <FormLabel className="block mb-3">Features</FormLabel>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {['Garden', 'Pool', 'Garage', 'Security', 'Sea View', 'Pet Friendly', 'Furnished', 'Air Conditioning'].map((feature) => (
+                    <Button
+                      key={feature}
+                      type="button"
+                      variant="outline"
+                      className={`
+                        text-sm justify-start h-auto py-2
+                        ${form.watch('features').includes(feature) 
+                          ? 'bg-propradar-100 border-propradar-300 text-propradar-800' 
+                          : ''}
+                      `}
+                      onClick={() => {
+                        const currentFeatures = form.watch('features');
+                        if (currentFeatures.includes(feature)) {
+                          form.setValue('features', currentFeatures.filter(f => f !== feature));
+                        } else {
+                          form.setValue('features', [...currentFeatures, feature]);
+                        }
+                      }}
+                    >
+                      {feature}
+                    </Button>
+                  ))}
                 </div>
               </div>
-            </FormItem>
-          </div>
+            </CollapsibleContent>
+          </Collapsible>
           
-          <div>
-            <FormLabel className="block mb-3">Features</FormLabel>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {['Garden', 'Pool', 'Garage', 'Security', 'Sea View', 'Pet Friendly', 'Furnished', 'Air Conditioning'].map((feature) => (
-                <Button
-                  key={feature}
-                  type="button"
-                  variant="outline"
-                  className={`
-                    text-sm justify-start h-auto py-2
-                    ${getFeatures().includes(feature) 
-                      ? 'bg-propradar-100 border-propradar-300 text-propradar-800' 
-                      : ''}
-                  `}
-                  onClick={() => {
-                    const currentFeatures = getFeatures();
-                    if (currentFeatures.includes(feature)) {
-                      form.setValue('features', currentFeatures.filter(f => f !== feature));
-                    } else {
-                      form.setValue('features', [...currentFeatures, feature]);
-                    }
-                  }}
-                >
-                  {feature}
-                </Button>
-              ))}
-            </div>
+          {/* Popular Searches */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            <p className="text-sm text-gray-500 mr-1">Popular:</p>
+            {['Cape Town', 'Johannesburg', 'Durban', 'Sandton', 'Pretoria'].map((location) => (
+              <Button 
+                key={location} 
+                variant="link"
+                type="button"
+                onClick={() => {
+                  form.setValue('location', location);
+                  form.handleSubmit(onSubmit)();
+                }}
+                className="text-sm text-propradar-600 hover:text-propradar-800 hover:underline p-0 h-auto"
+              >
+                {location}
+              </Button>
+            ))}
           </div>
         </form>
       </Form>

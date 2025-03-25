@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,134 +9,52 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bed, Bath, Square, MapPin, Camera, Home, Share2, Printer, Heart, ChevronLeft, Info } from 'lucide-react';
 import PriceInsights from '@/components/PriceInsights';
 import NeighborhoodIntelligence from '@/components/NeighborhoodIntelligence';
-import { useToast } from '@/hooks/use-toast';
 
 // Mock property data (in a real app, this would come from an API)
-const propertiesData = [
-  {
-    id: 1,
-    title: 'Modern Apartment in Sea Point',
-    description: 'This stylish apartment is located in the vibrant neighborhood of Sea Point, offering beautiful mountain views and sleek modern finishes. Features include an open-plan living space, state-of-the-art kitchen, and a private balcony perfect for enjoying Cape Town\'s sunsets.',
-    price: 3500000,
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 120,
-    garages: 1,
-    address: '15 Main Road, Sea Point, Cape Town',
-    type: 'Apartment',
-    yearBuilt: 2018,
-    features: [
-      'Mountain View', 
-      'Balcony', 
-      'Security System', 
-      'Parking Bay',
-      'Modern Kitchen',
-      'Air Conditioning',
-      'Communal Pool',
-      'Gym Access'
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
-    ],
-    coordinates: { lat: -33.9133, lng: 18.3885 },
-    agent: {
-      name: 'Michael Dawson',
-      phone: '+27 83 456 7890',
-      email: 'michael.dawson@propradar.co.za',
-      avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-    }
-  },
-  {
-    id: 2,
-    title: 'Family Home in Cape Town',
-    description: 'This beautiful family home is located in the heart of Camps Bay, offering stunning ocean views and modern finishes throughout. The property features an open-plan living area, gourmet kitchen, and a spacious outdoor entertainment area with a private pool.',
-    price: 4800000,
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 220,
-    garages: 2,
-    address: '45 Ocean View Drive, Camps Bay, Cape Town',
-    type: 'House',
-    yearBuilt: 2015,
-    features: [
-      'Ocean View', 
-      'Swimming Pool', 
-      'Garden', 
-      'Security System', 
-      'Garage',
-      'Walk-in Closet',
-      'Fireplace',
-      'High Ceilings',
-      'Open Plan Kitchen',
-      'Granite Countertops',
-      'Air Conditioning',
-      'Solar Panels'
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1600566753376-12c8ab8e17a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
-    ],
-    coordinates: { lat: -33.955050, lng: 18.387241 },
-    agent: {
-      name: 'Sarah Johnson',
-      phone: '+27 82 123 4567',
-      email: 'sarah.johnson@propradar.co.za',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
-    }
-  }
-];
-
-// Create a fallback property for safety
-const fallbackProperty = {
-  id: 0,
-  title: 'Property Not Found',
-  description: 'Property details not available',
-  price: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  area: 0,
-  garages: 0,
-  address: 'Address not available',
-  type: 'Unknown',
-  yearBuilt: 0,
-  features: [],
-  images: [],
-  coordinates: { lat: -33.918861, lng: 18.423300 }, // Default to Cape Town
+const property = {
+  id: 2,
+  title: 'Family Home in Cape Town',
+  description: 'This beautiful family home is located in the heart of Camps Bay, offering stunning ocean views and modern finishes throughout. The property features an open-plan living area, gourmet kitchen, and a spacious outdoor entertainment area with a private pool.',
+  price: 4800000,
+  bedrooms: 4,
+  bathrooms: 3,
+  area: 220,
+  garages: 2,
+  address: '45 Ocean View Drive, Camps Bay, Cape Town',
+  type: 'House',
+  yearBuilt: 2015,
+  features: [
+    'Ocean View', 
+    'Swimming Pool', 
+    'Garden', 
+    'Security System', 
+    'Garage',
+    'Walk-in Closet',
+    'Fireplace',
+    'High Ceilings',
+    'Open Plan Kitchen',
+    'Granite Countertops',
+    'Air Conditioning',
+    'Solar Panels'
+  ],
+  images: [
+    'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+    'https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+    'https://images.unsplash.com/photo-1600566753376-12c8ab8e17a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+    'https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+    'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80'
+  ],
+  coordinates: { lat: -33.955050, lng: 18.387241 },
   agent: {
-    name: 'Agent not available',
-    phone: '',
-    email: '',
-    avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'
+    name: 'Sarah Johnson',
+    phone: '+27 82 123 4567',
+    email: 'sarah.johnson@propradar.co.za',
+    avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
   }
 };
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { toast } = useToast();
-  
-  // In a real app, this would fetch the property data based on the ID
-  // For now, we'll find the property in our mock data or use the fallback
-  const property = React.useMemo(() => {
-    const foundProperty = propertiesData.find(p => p.id === Number(id));
-    
-    if (!foundProperty && id) {
-      // Show a toast notification when property is not found
-      toast({
-        title: "Property Not Found",
-        description: `We couldn't find property #${id}. Showing fallback information.`,
-        variant: "destructive",
-      });
-    }
-    
-    return foundProperty || fallbackProperty;
-  }, [id, toast]);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-ZA', { 
@@ -146,13 +64,6 @@ const PropertyDetail = () => {
     }).format(price);
   };
 
-  // Get safe values for any potentially undefined properties
-  const safeFeatures = Array.isArray(property.features) ? property.features : [];
-  const safeImages = Array.isArray(property.images) ? property.images : [];
-  
-  // Default image to use if no images are available
-  const defaultImage = 'https://via.placeholder.com/800x600?text=No+Image';
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -161,10 +72,10 @@ const PropertyDetail = () => {
         {/* Back to results */}
         <div className="container mx-auto px-4 mb-6">
           <Button variant="ghost" className="flex items-center text-gray-600" asChild>
-            <Link to="/properties">
+            <a href="/properties">
               <ChevronLeft className="h-4 w-4 mr-1" />
               Back to search results
-            </Link>
+            </a>
           </Button>
         </div>
         
@@ -173,42 +84,30 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
             <div className="col-span-2 row-span-2 rounded-l-lg overflow-hidden">
               <img 
-                src={safeImages[0] || defaultImage} 
+                src={property.images[0]} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = defaultImage;
-                }}
               />
             </div>
             <div className="rounded-tr-lg overflow-hidden">
               <img 
-                src={safeImages[1] || defaultImage} 
+                src={property.images[1]} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = defaultImage;
-                }}
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={safeImages[2] || defaultImage} 
+                src={property.images[2]} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = defaultImage;
-                }}
               />
             </div>
             <div className="overflow-hidden">
               <img 
-                src={safeImages[3] || defaultImage} 
+                src={property.images[3]} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = defaultImage;
-                }}
               />
             </div>
             <div className="relative rounded-br-lg overflow-hidden group">
@@ -219,12 +118,9 @@ const PropertyDetail = () => {
                 </Button>
               </div>
               <img 
-                src={safeImages[4] || defaultImage} 
+                src={property.images[4]} 
                 alt={property.title} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = defaultImage;
-                }}
               />
             </div>
           </div>
@@ -317,15 +213,12 @@ const PropertyDetail = () => {
                 <div>
                   <h2 className="text-xl font-semibold mb-3">Features & Amenities</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2">
-                    {safeFeatures.map((feature, index) => (
+                    {property.features.map((feature, index) => (
                       <div key={index} className="flex items-center">
                         <div className="w-2 h-2 bg-propradar-600 rounded-full mr-2"></div>
                         <span>{feature}</span>
                       </div>
                     ))}
-                    {safeFeatures.length === 0 && (
-                      <div className="col-span-3 text-gray-500 italic">No features listed for this property</div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -343,14 +236,12 @@ const PropertyDetail = () => {
                       propertyPrice={property.price}
                       propertyArea={property.area} 
                       propertyType={property.type}
-                      propertyLocation={property.address?.split(', ').slice(-2).join(', ') || 'Cape Town'}
+                      propertyLocation="Camps Bay, Cape Town"
                     />
                   </TabsContent>
                   
                   <TabsContent value="neighborhood">
-                    <NeighborhoodIntelligence 
-                      neighborhoodName={property.address?.split(', ').slice(-2).join(', ') || 'Cape Town'} 
-                    />
+                    <NeighborhoodIntelligence neighborhoodName="Camps Bay, Cape Town" />
                   </TabsContent>
                 </Tabs>
               </div>
@@ -364,16 +255,13 @@ const PropertyDetail = () => {
                   <div className="flex items-center mb-6">
                     <div className="mr-4">
                       <img 
-                        src={property.agent?.avatar || 'https://via.placeholder.com/80?text=Agent'} 
-                        alt={property.agent?.name || 'Agent'} 
+                        src={property.agent.avatar} 
+                        alt={property.agent.name} 
                         className="w-16 h-16 rounded-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=Agent';
-                        }}
                       />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">{property.agent?.name || 'Agent'}</h3>
+                      <h3 className="font-semibold text-lg">{property.agent.name}</h3>
                       <p className="text-sm text-gray-500">Property Agent</p>
                     </div>
                   </div>
@@ -381,14 +269,14 @@ const PropertyDetail = () => {
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Phone:</div>
-                      <a href={`tel:${property.agent?.phone || ''}`} className="text-propradar-600 hover:underline">
-                        {property.agent?.phone || 'N/A'}
+                      <a href={`tel:${property.agent.phone}`} className="text-propradar-600 hover:underline">
+                        {property.agent.phone}
                       </a>
                     </div>
                     <div className="flex items-center">
                       <div className="w-10 text-gray-500">Email:</div>
-                      <a href={`mailto:${property.agent?.email || ''}`} className="text-propradar-600 hover:underline">
-                        {property.agent?.email || 'N/A'}
+                      <a href={`mailto:${property.agent.email}`} className="text-propradar-600 hover:underline">
+                        {property.agent.email}
                       </a>
                     </div>
                   </div>
@@ -407,12 +295,9 @@ const PropertyDetail = () => {
                 <CardContent className="p-0">
                   <div className="aspect-video relative overflow-hidden rounded-t-lg">
                     <img 
-                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates?.lng || 0},${property.coordinates?.lat || 0})/${property.coordinates?.lng || 0},${property.coordinates?.lat || 0},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
+                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f44336(${property.coordinates.lng},${property.coordinates.lat})/${property.coordinates.lng},${property.coordinates.lat},13,0/600x300@2x?access_token=pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xjcHJ0NG9jMDlkdjNvcGVydHktbWFwLWtleSJ9.gzXbxED-Jm1P-8Gs9-u2MQ`}
                       alt="Map"
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x300?text=Map+Not+Available';
-                      }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
                       <Button className="bg-white text-gray-900 hover:bg-gray-100">
@@ -453,9 +338,6 @@ const PropertyDetail = () => {
                             src={`https://images.unsplash.com/photo-159921520${item}-abcd${item}?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=240&q=80`}
                             alt="Similar property" 
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/240?text=Property';
-                            }}
                           />
                         </div>
                         <div className="flex-grow">

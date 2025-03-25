@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Building, BarChart3, Shield, ChevronRight, MapPin } from 'lucide-react';
+import { Building, BarChart3, Shield, ChevronRight } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
 import FeatureShowcase from '@/components/FeatureShowcase';
 import PropertySearchForm from '@/components/PropertySearchForm';
