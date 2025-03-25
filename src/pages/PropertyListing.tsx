@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue 
 } from '@/components/ui/select';
-import { SearchIcon, MapPin, SlidersHorizontal, X, ArrowUpDown } from 'lucide-react';
+import { SearchIcon, MapPin, SlidersHorizontal, X } from 'lucide-react';
 import PropertyMap from '@/components/PropertyMap';
 import {
   Command,
@@ -219,7 +219,7 @@ const PropertyListing: React.FC = () => {
       const filtered = locations.filter(location => 
         location.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredLocations(filtered);
+      setFilteredLocations(filtered || []);
     }
   }, [searchQuery]);
 
@@ -291,7 +291,7 @@ const PropertyListing: React.FC = () => {
                       />
                       <CommandEmpty>No location found.</CommandEmpty>
                       <CommandGroup>
-                        {filteredLocations.map((location) => (
+                        {(filteredLocations || []).map((location) => (
                           <CommandItem
                             key={location}
                             value={location}

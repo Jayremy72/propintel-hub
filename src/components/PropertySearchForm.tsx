@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin } from 'lucide-react';
@@ -35,7 +34,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Sample locations for autocomplete
 const locations = [
   "Cape Town",
   "Johannesburg",
@@ -57,7 +55,6 @@ const locations = [
   "Midrand",
 ];
 
-// Define the schema for form validation
 const searchFormSchema = z.object({
   location: z.string().optional().default(""),
   propertyType: z.string().optional().default(""),
@@ -76,7 +73,6 @@ const PropertySearchForm = () => {
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [openLocationCombobox, setOpenLocationCombobox] = useState(false);
 
-  // Initialize form with default values
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
@@ -92,11 +88,9 @@ const PropertySearchForm = () => {
   });
 
   const onSubmit = (data: SearchFormValues) => {
-    // Update with price range values
     data.minPrice = priceRange[0];
     data.maxPrice = priceRange[1];
     
-    // Convert form data to query parameters
     const params = new URLSearchParams();
     
     Object.entries(data).forEach(([key, value]) => {
@@ -109,7 +103,6 @@ const PropertySearchForm = () => {
       }
     });
     
-    // Navigate to properties page with search filters
     navigate(`/properties?${params.toString()}`);
   };
 
@@ -121,23 +114,20 @@ const PropertySearchForm = () => {
     }).format(price);
   };
 
-  // This function ensures we're only filtering locations when search has input
-  // and it always returns a valid array
   const getFilteredLocations = () => {
     const searchValue = form.watch('location') || '';
     if (!searchValue) return locations;
-    return locations.filter(location => 
+    const filtered = locations.filter(location => 
       location.toLowerCase().includes(searchValue.toLowerCase())
     );
+    return filtered || [];
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-5">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Top Section with Location Search and Property Type */}
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Location Search with Autocomplete */}
             <div className="relative flex-grow">
               <FormField
                 control={form.control}
@@ -174,7 +164,7 @@ const PropertySearchForm = () => {
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup>
-                            {getFilteredLocations().map((location) => (
+                            {(getFilteredLocations() || []).map((location) => (
                               <CommandItem
                                 key={location}
                                 value={location}
@@ -196,7 +186,6 @@ const PropertySearchForm = () => {
               />
             </div>
 
-            {/* Property Type */}
             <FormField
               control={form.control}
               name="propertyType"
@@ -226,7 +215,6 @@ const PropertySearchForm = () => {
               )}
             />
 
-            {/* Search Button */}
             <Button 
               type="submit" 
               className="bg-propradar-600 hover:bg-propradar-700 h-12 md:px-8"
@@ -235,9 +223,7 @@ const PropertySearchForm = () => {
             </Button>
           </div>
 
-          {/* All filter options (always visible) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            {/* Property Category - Residential/Commercial */}
             <FormField
               control={form.control}
               name="category"
@@ -263,7 +249,6 @@ const PropertySearchForm = () => {
               )}
             />
 
-            {/* Bedrooms */}
             <FormField
               control={form.control}
               name="bedrooms"
@@ -293,7 +278,6 @@ const PropertySearchForm = () => {
               )}
             />
 
-            {/* Bathrooms */}
             <FormField
               control={form.control}
               name="bathrooms"
@@ -322,7 +306,6 @@ const PropertySearchForm = () => {
               )}
             />
 
-            {/* Price Range */}
             <FormItem>
               <FormLabel>Price Range</FormLabel>
               <div className="pt-2 px-2">
@@ -342,7 +325,6 @@ const PropertySearchForm = () => {
             </FormItem>
           </div>
           
-          {/* Property Features */}
           <div>
             <FormLabel className="block mb-3">Features</FormLabel>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">

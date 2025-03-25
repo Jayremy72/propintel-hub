@@ -16,9 +16,11 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      // Add proper error handling to prevent undefined values from propagating
-      onError: (err) => {
-        console.error('Query error:', err);
+      // Use the proper way to configure error handling for Tanstack Query
+      onSettled: (data, error) => {
+        if (error) {
+          console.error('Query error:', error);
+        }
       }
     },
   },
