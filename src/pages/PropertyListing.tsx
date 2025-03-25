@@ -476,4 +476,3 @@ const PropertyListing: React.FC = () => {
 };
 
 export default PropertyListing;
-

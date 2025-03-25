@@ -10,15 +10,14 @@ import PropertyListing from "./pages/PropertyListing";
 import PropertyDetail from "./pages/PropertyDetail";
 import NotFound from "./pages/NotFound";
 
-// Create a new QueryClient with error handling
+// Create a new QueryClient with proper error handling
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      // Using meta approach for error handling
-      meta: {
-        onError: (error: Error) => {
+      onSettled: (data, error) => {
+        if (error) {
           console.error('Query error:', error);
         }
       }
