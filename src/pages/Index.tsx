@@ -7,9 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, MapPin, Building, BarChart3, Shield, ChevronRight } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
-import Hero from '@/components/Hero';
-import Features from '@/components/Features';
-import FeatureShowcase from '@/components/FeatureShowcase';
 
 // Sample featured properties
 const featuredProperties = [
@@ -116,9 +113,6 @@ const Index: React.FC = () => {
             </div>
           </div>
         </section>
-        
-        {/* Feature Showcase - NEW SECTION highlighting what makes PropRadar different */}
-        <FeatureShowcase />
         
         {/* Featured Properties */}
         <section className="py-16 bg-gray-50">
