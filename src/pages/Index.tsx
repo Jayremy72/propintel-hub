@@ -1,12 +1,15 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Building, BarChart3, Shield, ChevronRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Search, MapPin, Building, BarChart3, Shield, ChevronRight } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
+import Hero from '@/components/Hero';
+import Features from '@/components/Features';
 import FeatureShowcase from '@/components/FeatureShowcase';
-import PropertySearchForm from '@/components/PropertySearchForm';
 
 // Sample featured properties
 const featuredProperties = [
@@ -62,7 +65,7 @@ const Index: React.FC = () => {
       <Navbar />
       
       <main className="flex-grow">
-        {/* Hero Section with Enhanced Search */}
+        {/* Hero Section */}
         <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-r from-propradar-900 to-propradar-800 overflow-hidden">
           {/* Decorative Background */}
           <div className="absolute inset-0 z-0 overflow-hidden">
@@ -84,12 +87,37 @@ const Index: React.FC = () => {
               </p>
             </div>
             
-            {/* Enhanced Property Search Form */}
-            <PropertySearchForm />
+            <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-xl p-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-grow">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Input 
+                    placeholder="Search for cities, neighborhoods, or properties..." 
+                    className="pl-10 h-12"
+                  />
+                </div>
+                <Button className="bg-propradar-600 hover:bg-propradar-700 h-12 px-8">
+                  Search Properties
+                </Button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-4">
+                <p className="text-sm text-gray-500 mr-1">Popular:</p>
+                {['Cape Town', 'Johannesburg', 'Durban', 'Sandton', 'Pretoria'].map((location) => (
+                  <Link 
+                    key={location} 
+                    to="/properties" 
+                    className="text-sm text-propradar-600 hover:text-propradar-800 hover:underline"
+                  >
+                    {location}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
         
-        {/* Feature Showcase */}
+        {/* Feature Showcase - NEW SECTION highlighting what makes PropRadar different */}
         <FeatureShowcase />
         
         {/* Featured Properties */}
