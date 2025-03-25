@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin } from 'lucide-react';
@@ -116,7 +117,8 @@ const PropertySearchForm = () => {
 
   const getFilteredLocations = () => {
     const searchValue = form.watch('location') || '';
-    if (!searchValue) return locations;
+    // Ensure we always return an array, even if no locations match
+    if (!searchValue) return locations || [];
     const filtered = locations.filter(location => 
       location.toLowerCase().includes(searchValue.toLowerCase())
     );
@@ -164,7 +166,7 @@ const PropertySearchForm = () => {
                           />
                           <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup>
-                            {(getFilteredLocations() || []).map((location) => (
+                            {getFilteredLocations().map((location) => (
                               <CommandItem
                                 key={location}
                                 value={location}

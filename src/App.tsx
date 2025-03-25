@@ -16,11 +16,9 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      // Use the proper way to configure error handling for Tanstack Query
-      onSettled: (data, error) => {
-        if (error) {
-          console.error('Query error:', error);
-        }
+      // Use a proper error handling approach without onSettled
+      onError: (error) => {
+        console.error('Query error:', error);
       }
     },
   },
