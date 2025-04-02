@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, ChevronDown } from 'lucide-react';
@@ -23,6 +22,10 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { 
+  ToggleGroup, 
+  ToggleGroupItem 
+} from "@/components/ui/toggle-group";
 import { Slider } from '@/components/ui/slider';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,6 +36,7 @@ const searchFormSchema = z.object({
   location: z.string().optional(),
   propertyType: z.string().optional(),
   category: z.string().optional(),
+  listingType: z.enum(["buy", "rent"]).default("buy"),
   minPrice: z.number().default(0),
   maxPrice: z.number().default(10000000),
   bedrooms: z.string().optional(),
@@ -54,6 +58,7 @@ const PropertySearchForm = () => {
       location: '',
       propertyType: '',
       category: 'Residential',
+      listingType: 'buy',
       minPrice: 0,
       maxPrice: 10000000,
       bedrooms: '',
@@ -61,6 +66,20 @@ const PropertySearchForm = () => {
       features: [],
     },
   });
+
+  // Handle listing type change
+  const handleListingTypeChange = (value: string) => {
+    if (value === "buy" || value === "rent") {
+      form.setValue("listingType", value);
+      
+      // Adjust price range based on listing type
+      if (value === "rent") {
+        setPriceRange([0, 50000]); // Lower range for rentals (monthly)
+      } else {
+        setPriceRange([0, 10000000]); // Higher range for sales
+      }
+    }
+  };
 
   const onSubmit = (data: SearchFormValues) => {
     // Update with price range values
@@ -96,6 +115,29 @@ const PropertySearchForm = () => {
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-5">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Buy/Rent Toggle */}
+          <div className="flex justify-center mb-4">
+            <ToggleGroup 
+              type="single" 
+              value={form.watch("listingType")}
+              onValueChange={handleListingTypeChange}
+              className="border rounded-lg overflow-hidden"
+            >
+              <ToggleGroupItem 
+                value="buy" 
+                className="px-8 data-[state=on]:bg-propradar-600 data-[state=on]:text-white"
+              >
+                Buy
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="rent" 
+                className="px-8 data-[state=on]:bg-propradar-600 data-[state=on]:text-white"
+              >
+                Rent
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+          
           <div className="flex flex-col md:flex-row gap-4">
             {/* Location Search */}
             <div className="relative flex-grow">
@@ -261,13 +303,15 @@ const PropertySearchForm = () => {
 
                 {/* Price Range */}
                 <FormItem>
-                  <FormLabel>Price Range</FormLabel>
+                  <FormLabel>
+                    {form.watch("listingType") === "rent" ? "Monthly Rental" : "Price Range"}
+                  </FormLabel>
                   <div className="pt-4 px-2">
                     <Slider
                       value={priceRange}
                       min={0}
-                      max={10000000}
-                      step={100000}
+                      max={form.watch("listingType") === "rent" ? 50000 : 10000000}
+                      step={form.watch("listingType") === "rent" ? 500 : 100000}
                       onValueChange={setPriceRange}
                       className="mb-2"
                     />
