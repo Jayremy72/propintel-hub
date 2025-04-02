@@ -1,12 +1,73 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import AnimatedCard from './AnimatedCard';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const ContactSection: React.FC = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simple validation
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulate form submission - replace with actual API call later
+    setTimeout(() => {
+      toast({
+        title: "Message sent",
+        description: "We'll get back to you soon!",
+      });
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
   return (
     <section id="contact" className="py-24 px-6 relative bg-white">
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-gray-50 to-white"></div>
@@ -35,14 +96,16 @@ const ContactSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <AnimatedCard className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
             <h3 className="text-2xl font-bold mb-6">Send Us a Message</h3>
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                    Your Name
+                    Your Name <span className="text-red-500">*</span>
                   </label>
                   <Input
                     id="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="John Doe"
                     className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
                     autoComplete="off"
@@ -52,11 +115,13 @@ const ContactSection: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email Address
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <Input
                     id="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="john@example.com"
                     className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
                     autoComplete="off"
@@ -72,6 +137,8 @@ const ContactSection: React.FC = () => {
                 </label>
                 <Input
                   id="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
                   placeholder="How can we help you?"
                   className="border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
                   autoComplete="off"
@@ -82,10 +149,12 @@ const ContactSection: React.FC = () => {
               
               <div className="space-y-2">
                 <label htmlFor="message" className="text-sm font-medium text-gray-700">
-                  Message
+                  Message <span className="text-red-500">*</span>
                 </label>
                 <Textarea
                   id="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Your message here..."
                   className="min-h-[150px] border-gray-200 focus:border-propradar-500 focus:ring-propradar-500"
                   autoComplete="off"
@@ -94,9 +163,13 @@ const ContactSection: React.FC = () => {
                 />
               </div>
               
-              <Button className="w-full bg-propradar-600 hover:bg-propradar-700 text-white">
+              <Button 
+                type="submit" 
+                className="w-full bg-propradar-600 hover:bg-propradar-700 text-white"
+                disabled={isSubmitting}
+              >
                 <Send className="w-4 h-4 mr-2" />
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
             </form>
           </AnimatedCard>
